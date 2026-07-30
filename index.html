@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mental Health Prediction Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link
+  href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+  rel="stylesheet"
+/>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="page">
+  <div class="shell">
+
+    <div class="topbar">
+      <div>
+        <p class="eyebrow">Student wellbeing intake · 01</p>
+        <h1>Mental Health Prediction Dashboard</h1>
+        <p class="lede">
+          Enter a student's lifestyle and social media habits to estimate a
+          mental health score from the trained model, read like a single
+          vitals check rather than a form.
+        </p>
+      </div>
+      <div class="toolbar">
+        <button class="toggle-btn" id="darkToggle">☾ Dark mode</button>
+        <button class="toggle-btn" id="apiToggle">⚙ API address</button>
+        <input class="api-field hidden" id="apiField" placeholder="http://localhost:8000" />
+      </div>
+    </div>
+
+    <form class="grid" id="predictForm">
+
+      <!-- FORM PANEL -->
+      <div class="panel">
+        <p class="panel-title">Intake form</p>
+        <p class="panel-sub">All fields are required for a prediction.</p>
+
+        <p class="section-label">Profile</p>
+        <div class="row3">
+          <label class="field">
+            <span class="field-label">Age</span>
+            <input class="input" type="number" id="Age" value="20" />
+            <span class="field-error" id="err-Age"></span>
+          </label>
+          <label class="field">
+            <span class="field-label">Gender</span>
+            <select class="input select" id="Gender">
+              <option>Male</option><option selected>Female</option><option>Other</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Academic level</span>
+            <select class="input select" id="Academic_Level">
+              <option>High School</option>
+              <option selected>Undergraduate</option>
+              <option>Graduate</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="field">
+          <span class="field-label">Country</span>
+          <select class="input select" id="Country">
+            <option selected>India</option><option>USA</option><option>Canada</option>
+            <option>Australia</option><option>UK</option><option>Germany</option>
+            <option>Mexico</option><option>Turkey</option><option>France</option><option>Other</option>
+          </select>
+          <span class="field-error" id="err-Country"></span>
+        </label>
+
+        <p class="section-label">Social media use</p>
+        <div class="row2">
+          <label class="field">
+            <span class="field-label">Most used platform</span>
+            <select class="input select" id="Most_Used_Platform">
+              <option selected>Instagram</option><option>Facebook</option><option>Twitter</option>
+              <option>Snapchat</option><option>TikTok</option><option>Other</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Purpose of use</span>
+            <select class="input select" id="Purpose_Of_Use">
+              <option>Entertainment</option><option>Education</option>
+              <option selected>Socializing</option><option>News</option><option>Other</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="row2">
+          <label class="field">
+            <span class="field-label">Avg daily usage <span class="field-unit">· hours</span></span>
+            <input class="input" type="number" step="0.1" id="Avg_Daily_Usage_Hours" value="4" />
+            <span class="field-error" id="err-Avg_Daily_Usage_Hours"></span>
+          </label>
+          <label class="field">
+            <span class="field-label">Daily unlocks <span class="field-unit">· count</span></span>
+            <input class="input" type="number" id="Daily_Unlocks" value="60" />
+            <span class="field-error" id="err-Daily_Unlocks"></span>
+          </label>
+        </div>
+
+        <p class="section-label">Daily rhythm</p>
+        <div class="row3">
+          <label class="field">
+            <span class="field-label">Study hours <span class="field-unit">· hrs/day</span></span>
+            <input class="input" type="number" step="0.1" id="Study_Hours" value="3" />
+            <span class="field-error" id="err-Study_Hours"></span>
+          </label>
+          <label class="field">
+            <span class="field-label">Physical activity <span class="field-unit">· hrs/day</span></span>
+            <input class="input" type="number" step="0.1" id="Physical_Activity_Hours" value="1" />
+            <span class="field-error" id="err-Physical_Activity_Hours"></span>
+          </label>
+          <label class="field">
+            <span class="field-label">Sleep <span class="field-unit">· hrs/night</span></span>
+            <input class="input" type="number" step="0.1" id="Sleep_Hours_Per_Night" value="6.5" />
+            <span class="field-error" id="err-Sleep_Hours_Per_Night"></span>
+          </label>
+        </div>
+
+        <p class="section-label">Stress</p>
+        <label class="field">
+          <span class="field-label">Stress level</span>
+          <select class="input select" id="Stress_Level">
+            <option>Low</option><option selected>Medium</option><option>High</option><option>Very High</option>
+          </select>
+        </label>
+
+        <div class="actions">
+          <button class="btn-primary" type="submit" id="submitBtn">Predict Mental Health Score</button>
+          <button class="btn-secondary" type="button" id="resetBtn">Reset</button>
+        </div>
+      </div>
+
+      <!-- READOUT PANEL -->
+      <div class="readout">
+        <div class="panel">
+          <p class="panel-title">Reading</p>
+          <p class="panel-sub">Updates once the model responds.</p>
+
+          <div id="loadingState" class="loading-state hidden">
+            <div class="spinner"></div>
+            <span style="font-size:13px;color:var(--muted);">Contacting model…</span>
+          </div>
+
+          <div id="errorState" class="error-box hidden"></div>
+
+          <div id="idleState">
+            <div class="gauge-wrap">
+              <svg viewBox="0 0 220 130" class="gauge-svg" id="gaugeSvg">
+                <path d="M 20 110 A 90 90 0 0 1 200 110" class="gauge-track" />
+                <path d="M 20 110 A 90 90 0 0 1 200 110" class="gauge-fill" id="gaugeFill"
+                      style="stroke-dasharray:283; stroke-dashoffset:283;" />
+                <line x1="110" y1="110" x2="110" y2="28" class="gauge-needle" id="gaugeNeedle" />
+                <circle cx="110" cy="110" r="6" class="gauge-hub" />
+              </svg>
+              <div class="gauge-scale"><span>0</span><span>5</span><span>10</span></div>
+            </div>
+            <p class="placeholder-state" id="placeholderText">
+              Fill in the intake form and predict to see the score here.
+            </p>
+            <div class="score-display hidden" id="scoreDisplay">
+              <div class="score-number" id="scoreNumber">0.00</div>
+              <div class="score-unit">predicted score · 0–10 scale</div>
+            </div>
+          </div>
+
+          <div class="snapshot">
+            <div class="snap-item">
+              <span class="snap-key">Sleep</span>
+              <span class="snap-val" id="snapSleep">6.5h</span>
+            </div>
+            <div class="snap-item">
+              <span class="snap-key">Screen time</span>
+              <span class="snap-val" id="snapScreen">4h</span>
+            </div>
+            <div class="snap-item">
+              <span class="snap-key">Stress</span>
+              <span class="snap-val" id="snapStress">Medium</span>
+            </div>
+            <div class="snap-item">
+              <span class="snap-key">Activity</span>
+              <span class="snap-val" id="snapActivity">1h</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="footnote">
+          For educational use only. This tool does not diagnose or treat any
+          condition, and is not a substitute for guidance from a qualified
+          mental health professional.
+        </p>
+      </div>
+
+    </form>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
