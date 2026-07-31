@@ -27,7 +27,7 @@ const DEFAULTS = {
   Stress_Level: "Medium",
 };
 
-let apiBase = "http://localhost:8000";
+let apiBase = "https://manasik-santhulan-score.onrender.com";
 
 // ---- element refs ----
 const form = document.getElementById("predictForm");
