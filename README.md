@@ -20,3 +20,20 @@ This is not a clinically validated assessment or diagnostic tool. Do not use pre
 ## Repository hygiene
 
 Remove the tracked virtual environment, installer and caches in a separate reviewed cleanup. Recreate the environment from dependencies. Do not rewrite Git history without coordination.
+
+## Repository overview
+
+Educational ML prototype for exploring social media habits and predicted mental-health scores; not a clinical tool.
+
+**Suggested GitHub topics:** `machine-learning` `fastapi` `scikit-learn` `pandas` `python` `responsible-ai`.
+
+## System architecture
+
+```mermaid
+flowchart LR
+  Dataset --> Training[Notebook training]
+  Training --> Model[Serialized model]
+  Form[Browser form] --> API[FastAPI validation]
+  API --> Model
+  Model --> Score[Predicted score]
+```
